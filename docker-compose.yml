@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  react-app:
+    build: .
+    environment:
+      VIRTUAL_HOST: thetriplethree333.com
+      LETSENCRYPT_HOST: thetriplethree333.com
+      LETSENCRYPT_EMAIL: kevin.silva.095@gmail.com
+    expose:
+      - "80"
+    volumes:
+      - .:/app # Monta la carpeta actual en /app dentro del contenedor
+      - /app/node_modules # Evita que los módulos de node se sobrescriban
+    networks:
+      - nginx-proxy
+
+networks:
+  nginx-proxy:
+    external:
+      name: nginx-proxy_default

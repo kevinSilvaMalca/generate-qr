@@ -3,7 +3,7 @@ const QRCode = require('qrcode');
 const Jimp = require('jimp');
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 80;
 
 // URL del logo
 const logoUrl = 'https://admin.thetriplethree333.com/uploads/image_1_548902308c.png';
