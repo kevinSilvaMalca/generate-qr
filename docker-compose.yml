@@ -3,8 +3,8 @@ services:
   react-app:
     build: .
     environment:
-      VIRTUAL_HOST: thetriplethree333.com
-      LETSENCRYPT_HOST: thetriplethree333.com
+      VIRTUAL_HOST: qr.thetriplethree333.com
+      LETSENCRYPT_HOST: qr.thetriplethree333.com
       LETSENCRYPT_EMAIL: kevin.silva.095@gmail.com
     expose:
       - "80"
