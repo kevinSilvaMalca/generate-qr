@@ -3,7 +3,7 @@ const QRCode = require('qrcode');
 const Jimp = require('jimp');
 const express = require('express');
 const app = express();
-const port = 80;
+const port = 3000;
 
 // URL del logo
 const logoUrl = 'https://admin.thetriplethree333.com/uploads/image_1_548902308c.png';
@@ -31,7 +31,7 @@ app.get('/generate-qr', async (req, res) => {
     const logoImage = await Jimp.read(logoBuffer);
 
     // Redimensionar el logo para que sea más pequeño que el QR, manteniendo la proporción
-    const logoMaxSize = qrImage.bitmap.width / 4;
+    const logoMaxSize = qrImage.bitmap.width / 2;
     logoImage.scaleToFit(logoMaxSize, logoMaxSize);
 
     // Crear un fondo blanco para el logo
