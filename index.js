@@ -7,6 +7,7 @@ const port = 80;
 
 // URL del logo
 const logoUrl = 'https://admin.thetriplethree333.com/uploads/image_1_548902308c.png';
+const logoUrlRojo = 'https://admin.thetriplethree333.com/uploads/logo_122d6f61e4.png';
 
 app.get('/generate-qr', async (req, res) => {
   try {
@@ -60,6 +61,66 @@ app.get('/generate-qr', async (req, res) => {
     res.status(500).send('Error generating QR code with logo');
   }
 });
+
+app.get('/generate-qr-rojo', async (req, res) => {
+  try {
+    // Obtener el parámetro de consulta
+    const qrData = req.query.data || 'https://thetriplethree333.com/card-menu';
+
+    // Descargar la imagen del logo
+    const response = await axios.get(logoUrlRojo, { responseType: 'arraybuffer' });
+    const logoBuffer = Buffer.from(response.data, 'binary');
+
+    // Generar el código QR
+    const qrOptions = {
+      errorCorrectionLevel: 'H',
+      type: 'image/png',
+      margin: 1,
+      width: 600, // Hacer el QR más pequeño
+      color: {
+        dark: '#BA0D0D', // Rojo
+        light: '#000000' // Negro
+      }
+    };
+    const qrImageBuffer = await QRCode.toBuffer(qrData, qrOptions);
+
+    // Cargar el QR y el logo usando Jimp
+    const qrImage = await Jimp.read(qrImageBuffer);
+    const logoImage = await Jimp.read(logoBuffer);
+
+    // Redimensionar el logo para que sea más pequeño que el QR, manteniendo la proporción
+    const logoMaxSize = qrImage.bitmap.width / 2;
+    logoImage.scaleToFit(logoMaxSize, logoMaxSize);
+
+    // Crear un fondo negro para el logo
+    const blackBackground = new Jimp(logoImage.bitmap.width, logoImage.bitmap.height, 0x000000ff);
+    blackBackground.composite(logoImage, 0, 0);
+
+    // Calcular la posición para centrar el logo en el QR
+    const x = (qrImage.bitmap.width - blackBackground.bitmap.width) / 2;
+    const y = (qrImage.bitmap.height - blackBackground.bitmap.height) / 2;
+
+    // Insertar el logo con fondo negro en el QR
+    qrImage.composite(blackBackground, x, y, {
+      mode: Jimp.BLEND_SOURCE_OVER,
+      opacitySource: 1,
+      opacityDest: 1
+    });
+
+    // Convertir la imagen final a un buffer
+    const finalBuffer = await qrImage.getBufferAsync(Jimp.MIME_PNG);
+
+    // Enviar la imagen como respuesta
+    res.set('Content-Type', 'image/png');
+    res.send(finalBuffer);
+  } catch (error) {
+    console.error('Error generating QR code with logo:', error);
+    res.status(500).send('Error generating QR code with logo');
+  }
+});
+
+
+
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
